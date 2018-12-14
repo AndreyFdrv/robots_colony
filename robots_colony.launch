@@ -1,7 +1,28 @@
 <launch>
+  <arg name="paused" default="false"/>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="gui" default="true"/>
+  <arg name="headless" default="false"/>
+  <arg name="debug" default="false"/>
+  <arg name="worker_model" default="$(find robots_colony)/worker/urdf/08-macroed.urdf.xacro"/>
+
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="world_name" value="$(find robots_colony)/robots_colony.world"/>
+    <arg name="debug" value="$(arg debug)" />
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="headless" value="$(arg headless)"/>
   </include>
-  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" 
-	args="-file $(find robots_colony)/urdf/baxter.urdf -urdf -z 1 -model baxter"/>
+
+  <param name="robot_description" command="$(find xacro)/xacro.py $(arg worker_model)"/>
+
+  <node name="spawn_queen" pkg="gazebo_ros" type="spawn_model" 
+	args="-file $(find robots_colony)/queen/urdf/baxter.urdf -urdf -x 0 -y 0 -z 1 -model queen"/>
+  <node name="spawn_worker1" pkg="gazebo_ros" type="spawn_model"
+        args="-x 4 -y -3 -z 1 -unpause -urdf -model worker1 -param robot_description" respawn="false" output="screen"/>
+  <node name="spawn_worker2" pkg="gazebo_ros" type="spawn_model"
+        args="-x 5 -y -2 -z 1 -unpause -urdf -model worker2 -param robot_description" respawn="false" output="screen"/>
+  <node name="spawn_worker3" pkg="gazebo_ros" type="spawn_model"
+        args="-x 3 -y -1 -z 1 -unpause -urdf -model worker3 -param robot_description" respawn="false" output="screen"/>
 </launch>
