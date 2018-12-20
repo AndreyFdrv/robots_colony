@@ -4,7 +4,8 @@
   <arg name="gui" default="true"/>
   <arg name="headless" default="false"/>
   <arg name="debug" default="false"/>
-  <arg name="worker_model" default="$(find robots_colony)/worker/urdf/08-macroed.urdf.xacro"/>
+  <arg name="worker_model" default="$(find robots_colony)/worker_model/urdf/worker.urdf.xacro"/>
+  <arg name="queen_model" default="$(find robots_colony)/queen_model/urdf/queen.urdf.xacro"/>
 
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="world_name" value="$(find robots_colony)/robots_colony.world"/>
@@ -15,14 +16,16 @@
     <arg name="headless" value="$(arg headless)"/>
   </include>
 
-  <param name="robot_description" command="$(find xacro)/xacro.py $(arg worker_model)"/>
+  <param name="worker_description" command="$(find xacro)/xacro.py $(arg worker_model)"/>
+
+  <param name="queen_description" command="$(find xacro)/xacro.py $(arg queen_model)"/>
 
   <node name="spawn_queen" pkg="gazebo_ros" type="spawn_model" 
-	args="-file $(find robots_colony)/queen/urdf/baxter.urdf -urdf -x 0 -y 0 -z 1 -model queen"/>
+	args="-file $(find robots_colony)/queen_model/urdf/baxter.urdf -urdf -x 0 -y 0 -z 1 -model queen"/>
   <node name="spawn_worker1" pkg="gazebo_ros" type="spawn_model"
-        args="-x 4 -y -3 -z 1 -unpause -urdf -model worker1 -param robot_description" respawn="false" output="screen"/>
+        args="-x 4 -y -3 -z 1 -unpause -urdf -model worker1 -param worker_description" respawn="false" output="screen"/>
   <node name="spawn_worker2" pkg="gazebo_ros" type="spawn_model"
-        args="-x 5 -y -2 -z 1 -unpause -urdf -model worker2 -param robot_description" respawn="false" output="screen"/>
+        args="-x 5 -y -2 -z 1 -unpause -urdf -model worker2 -param worker_description" respawn="false" output="screen"/>
   <node name="spawn_worker3" pkg="gazebo_ros" type="spawn_model"
-        args="-x 3 -y -1 -z 1 -unpause -urdf -model worker3 -param robot_description" respawn="false" output="screen"/>
+        args="-x 3 -y -1 -z 1 -unpause -urdf -model worker3 -param worker_description" respawn="false" output="screen"/>
 </launch>
