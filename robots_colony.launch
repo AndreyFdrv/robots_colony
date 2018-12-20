@@ -28,4 +28,8 @@
         args="-x 5 -y -2 -z 1 -unpause -urdf -model worker2 -param worker_description" respawn="false" output="screen"/>
   <node name="spawn_worker3" pkg="gazebo_ros" type="spawn_model"
         args="-x 3 -y -1 -z 1 -unpause -urdf -model worker3 -param worker_description" respawn="false" output="screen"/>
+
+  <node pkg="robots_colony" type="worker" name="worker1" args="worker1 4 -3"/>
+  <node pkg="robots_colony" type="worker" name="worker2" args="worker2 5 -2"/>
+  <node pkg="robots_colony" type="worker" name="worker3" args="worker3 3 -1"/>
 </launch>
