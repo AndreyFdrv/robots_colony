@@ -4,16 +4,12 @@
 #include <vector>
 #include <ros/ros.h>
 #include <robots_colony/Commands.h>
+#include <robots_colony/Coordinates.h>
 using namespace ros;
 int MinCoordinate = -10;
 int MaxCoordinate = 10;
 int WorkersCount=3;
-struct Coordinate
-{
-	double x;
-	double y;
-};
-std::vector<Coordinate> FoodSources;
+std::vector<robots_colony::Coordinates> FoodSources;
 double GenerateCoordinate()
 {
 	return (double)(MinCoordinate + rand() % (MaxCoordinate - MinCoordinate + 1));
@@ -22,37 +18,26 @@ int GenerateFoodSourceIndex()
 {
 	return rand()%(FoodSources.size());	
 }
-void FillFoodSources()
+void AddNewFoodSource(const robots_colony::Coordinates &coordinate)
 {
-	Coordinate foodSource;
-	foodSource.x=-4.0926;
-	foodSource.y=-6.37064;
-	FoodSources.push_back(foodSource);
-	foodSource.x=2.27097;
-	foodSource.y=-4.90781;
-	FoodSources.push_back(foodSource);
-	foodSource.x=7.75741;
-	foodSource.y=11.097;
-	FoodSources.push_back(foodSource);
-	foodSource.x=-5.49876;
-	foodSource.y=6.85922;
-	FoodSources.push_back(foodSource);
-	foodSource.x=-8.18779;
-	foodSource.y=-1.68541;
-	FoodSources.push_back(foodSource);
-	foodSource.x=9.3142;
-	foodSource.y=-5.25374;
-	FoodSources.push_back(foodSource);
+	ROS_INFO("New food source was found");
+	for(int i=0; i<FoodSources.size(); i++)
+	{
+		if((FoodSources.at(i).x==coordinate.x) && (FoodSources.at(i).y==coordinate.y))
+			return;
+	}
+	FoodSources.push_back(coordinate);
 }
 int main(int argc, char **argv)
 {
-	FillFoodSources();//temporary function, later this information will be got from workers
 	init(argc, argv, "queen");
 	NodeHandle n;
 	robots_colony::Commands command;
 	srand(time(NULL));
+	Subscriber sub=n.subscribe("exploring_queen", 1000, AddNewFoodSource);
 	while(true)
 	{
+		spinOnce();
 		for(int i=1; i<=WorkersCount; i++)
 		{
 			Publisher pub = n.advertise<robots_colony::Commands>(("exploring_worker"+std::to_string(i)).c_str(), 1000);
