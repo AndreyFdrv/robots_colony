@@ -9,6 +9,8 @@ using namespace ros;
 double MinCoordinate = -10;
 double MaxCoordinate = 10;
 double Step = 0.1;
+double QueenX=0;
+double QueenY=0;
 bool HaveTask=false;
 Publisher publisher;
 gazebo_msgs::ModelState Msg;
@@ -45,7 +47,36 @@ void Explore(const robots_colony::Commands &command)
 	}
 	else if(command.command.compare("getFood")==0)
 	{
-
+		double x = command.x;
+		double y = command.y;
+		double distance = Distance(x, y, msg.pose.position.x, msg.pose.position.y)-1;
+		int StepsCount = (int)(distance/Step)+1;
+		for(int i=0; i<StepsCount; i++)
+		{
+			double angle = atan2(y-msg.pose.position.y, x-msg.pose.position.x);
+			msg.pose.position.x += Step*cos(angle);
+    			msg.pose.position.y += Step*sin(angle);
+    			msg.pose.orientation.z = sin(angle/2);
+    			msg.pose.orientation.w = cos(angle/2);
+			publisher.publish(msg);
+			rate.sleep();
+		}
+		x = QueenX;
+		y = QueenY;
+		distance = Distance(x, y, msg.pose.position.x, msg.pose.position.y)-2;
+		StepsCount = (int)(distance/Step)+1;
+		for(int i=0; i<StepsCount; i++)
+		{
+			double angle = atan2(y-msg.pose.position.y, x-msg.pose.position.x);
+			msg.pose.position.x += Step*cos(angle);
+    			msg.pose.position.y += Step*sin(angle);
+    			msg.pose.orientation.z = sin(angle/2);
+    			msg.pose.orientation.w = cos(angle/2);
+			publisher.publish(msg);
+			rate.sleep();
+		}
+		Msg=msg;
+		HaveTask=false;
 	}
 }
 int main(int argc, char **argv)
