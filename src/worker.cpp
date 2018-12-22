@@ -1,37 +1,33 @@
 #include <cstdlib>
 #include <ctime>
 #include <ros/ros.h>
+#include <string>
 #include <gazebo_msgs/ModelState.h>
 #include <tf/transform_listener.h>
+#include <robots_colony/Commands.h>
 using namespace ros;
 double MinCoordinate = -10;
 double MaxCoordinate = 10;
 double Step = 0.1;
-double GenerateCoordinate()
-{
-	return (MaxCoordinate-MinCoordinate) * ((double)rand()/RAND_MAX) + MinCoordinate;
-}
+bool HaveTask=false;
+Publisher publisher;
+gazebo_msgs::ModelState Msg;
 double Distance(double x1, double y1, double x2, double y2)
 {
 	return sqrt(pow(x1-x2, 2)+pow(y1-y2, 2));
 }
-int main(int argc, char **argv)
+void Explore(const robots_colony::Commands &command)
 {
-	init(argc, argv, "worker");
-    	NodeHandle n;
-    	Publisher publisher = n.advertise<gazebo_msgs::ModelState>("gazebo/set_model_state", 10);
-    	gazebo_msgs::ModelState msg;
-    	msg.model_name = argv[1];
-    	msg.pose.position.x = atof(argv[2]);
-    	msg.pose.position.y = atof(argv[3]);
-    	msg.pose.orientation.z = sin(0);
-    	msg.pose.orientation.w = cos(0);
-    	srand(msg.pose.position.x*time(NULL));
+	if(HaveTask)
+		return;
+	HaveTask=true;
 	Rate rate(50);
-	while(true)
+	gazebo_msgs::ModelState msg;
+	msg=Msg;
+	if(command.command.compare("explore")==0)
 	{
-    		double x = GenerateCoordinate();
-		double y = GenerateCoordinate();
+    		double x = command.x;
+		double y = command.y;
 		double distance = Distance(x, y, msg.pose.position.x, msg.pose.position.y);
 		int StepsCount = (int)(distance/Step)+1;
 		for(int i=0; i<StepsCount; i++)
@@ -44,6 +40,26 @@ int main(int argc, char **argv)
 			publisher.publish(msg);
 			rate.sleep();
 		}
-		rate.sleep();
-    	}
+		Msg=msg;
+		HaveTask=false;
+	}
+	else if(command.command.compare("getFood")==0)
+	{
+
+	}
+}
+int main(int argc, char **argv)
+{
+	init(argc, argv, "worker");
+    	NodeHandle n;
+    	publisher = n.advertise<gazebo_msgs::ModelState>("gazebo/set_model_state", 10);
+    	gazebo_msgs::ModelState msg;
+    	msg.model_name = argv[1];
+    	msg.pose.position.x = atof(argv[2]);
+    	msg.pose.position.y = atof(argv[3]);
+    	msg.pose.orientation.z = sin(0);
+    	msg.pose.orientation.w = cos(0);
+	Msg=msg;
+	Subscriber sub=n.subscribe(("exploring_"+std::string(argv[1])).c_str(), 1000, Explore);
+	spin();
 }

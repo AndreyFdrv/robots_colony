@@ -32,4 +32,5 @@
   <node pkg="robots_colony" type="worker" name="worker1" args="worker1 4 -3"/>
   <node pkg="robots_colony" type="worker" name="worker2" args="worker2 5 -2"/>
   <node pkg="robots_colony" type="worker" name="worker3" args="worker3 3 -1"/>
+  <node pkg="robots_colony" type="queen" name="queen"/>
 </launch>

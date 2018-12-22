@@ -5,7 +5,20 @@ add_compile_options(-std=c++11)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
-  gazebo_ros)
+  gazebo_ros
+  std_msgs
+  message_generation)
+
+add_message_files(
+   FILES
+   Commands.msg
+#   Message2.msg
+)
+
+generate_messages(
+  DEPENDENCIES
+  std_msgs  # Or other packages containing msgs
+)
 
 catkin_package(
 #  INCLUDE_DIRS include
@@ -27,8 +40,12 @@ include_directories(
 )
 
 add_executable(worker src/worker.cpp)
+add_executable(queen src/queen.cpp)
 
 target_link_libraries(worker
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(queen
   ${catkin_LIBRARIES}
 )
 
