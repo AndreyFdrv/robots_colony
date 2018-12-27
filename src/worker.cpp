@@ -126,6 +126,6 @@ int main(int argc, char **argv)
     	msg.pose.orientation.z = sin(0);
     	msg.pose.orientation.w = cos(0);
 	Msg=msg;
-	Subscriber sub=n.subscribe(("exploring_"+std::string(argv[1])).c_str(), 1000, Explore);
+	Subscriber sub=n.subscribe(("commands_"+std::string(argv[1])).c_str(), 1000, Explore);
 	spin();
 }

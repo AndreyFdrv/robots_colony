@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 		spinOnce();
 		for(int i=1; i<=WorkersCount; i++)
 		{
-			Publisher pub = n.advertise<robots_colony::Commands>(("exploring_worker"+std::to_string(i)).c_str(), 1000);
+			Publisher pub = n.advertise<robots_colony::Commands>(("commands_worker"+std::to_string(i)).c_str(), 1000);
 			if((rand()%2==0)||(FoodSources.size()==0))
 			{
 				command.command = "explore";
